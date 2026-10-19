@@ -1,0 +1,73 @@
+{
+  "best_model": "k-NN",
+  "data_source": "real:urls.csv",
+  "n_samples": 65552,
+  "features": [
+    "url_length",
+    "num_dots",
+    "has_at",
+    "is_https",
+    "num_suspicious_keywords",
+    "num_hyphens",
+    "num_digits",
+    "digit_ratio",
+    "has_ip_host",
+    "num_subdomains",
+    "host_length",
+    "path_length",
+    "num_query_params",
+    "has_punycode",
+    "is_shortener",
+    "risky_tld",
+    "host_entropy",
+    "double_slash_in_path",
+    "has_port",
+    "path_depth",
+    "num_special_chars",
+    "free_hosting",
+    "brand_mismatch",
+    "longest_digit_run",
+    "has_script_ext"
+  ],
+  "results": {
+    "Naive Bayes": {
+      "accuracy": 0.7785453993319161,
+      "precision": 0.8958065896448438,
+      "recall": 0.6327640924890434,
+      "f1": 0.7416526436985209,
+      "cv_f1_mean": 0.7395735012763333,
+      "cv_f1_std": 0.004639549628760101,
+      "latency_ms_per_url": 0.00041605230792488327,
+      "tp": 4187,
+      "fp": 487,
+      "tn": 6068,
+      "fn": 2430
+    },
+    "Decision Tree": {
+      "accuracy": 0.8265259641664136,
+      "precision": 0.8744813278008299,
+      "recall": 0.7643947408191023,
+      "f1": 0.8157406660753165,
+      "cv_f1_mean": 0.8139430796323124,
+      "cv_f1_std": 0.005266252142087866,
+      "latency_ms_per_url": 0.00024060081992170523,
+      "tp": 5058,
+      "fp": 726,
+      "tn": 5829,
+      "fn": 1559
+    },
+    "k-NN": {
+      "accuracy": 0.8352566049195262,
+      "precision": 0.8847551479494722,
+      "recall": 0.7727066646516548,
+      "f1": 0.824943530171023,
+      "cv_f1_mean": 0.8254069134715392,
+      "cv_f1_std": 0.005203583938962527,
+      "latency_ms_per_url": 0.31318717324627854,
+      "tp": 5113,
+      "fp": 666,
+      "tn": 5889,
+      "fn": 1504
+    }
+  }
+}

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PhishGuard · URL risk check</title>
+<style>
+:root{--bg:#f3f5f2;--ink:#14201b;--mute:#5b6b63;--line:#cfd8d2;--card:#fff;--safe:#1f7a4d;--warn:#a86a00;--bad:#b3261e}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1714;--ink:#e6eee9;--mute:#8fa198;--line:#26352e;--card:#16211c;--safe:#4cc38a;--warn:#e0a53a;--bad:#ff7b72}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 Georgia,"Times New Roman",serif}
+main{max-width:680px;margin:0 auto;padding:12vh 20px 40px}
+h1{font-size:2.4rem;line-height:1.15;margin:0 0 .4em;letter-spacing:-.01em}
+p.lead{color:var(--mute);margin:0 0 1.6em;max-width:52ch}
+form{display:flex;gap:10px;flex-wrap:wrap}
+input{flex:1 1 320px;padding:14px;border:1.5px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);font:16px ui-monospace,Menlo,monospace}
+button{padding:14px 22px;border:0;border-radius:6px;background:var(--ink);color:var(--bg);font:600 16px system-ui,sans-serif;cursor:pointer}
+:focus-visible{outline:3px solid var(--safe);outline-offset:2px}
+#out{margin-top:28px;padding:22px;border-left:6px solid var(--line);background:var(--card);border-radius:0 6px 6px 0;display:none}
+#out.safe{border-color:var(--safe)}#out.suspicious{border-color:var(--warn)}#out.phishing{border-color:var(--bad)}
+#v{font-size:1.7rem;margin:0}#out.safe #v{color:var(--safe)}#out.suspicious #v{color:var(--warn)}#out.phishing #v{color:var(--bad)}
+#out ul{margin:.6em 0 0;padding-left:1.2em;color:var(--mute)}
+footer{margin-top:48px;color:var(--mute);font:14px system-ui,sans-serif}
+</style></head><body><main>
+<h1>Is this link safe to open?</h1>
+<p class="lead">Paste a URL. PhishGuard scores it from its structure alone, without visiting the page.</p>
+<form id="f"><input id="u" name="url" placeholder="http://secure-paypal-login.example.xyz/verify" required maxlength="2048" aria-label="URL to check" autocomplete="off">
+<button>Check URL</button></form>
+<section id="out" aria-live="polite"><h2 id="v"></h2><div id="p"></div><ul id="r"></ul></section>
+<footer>Model: {{ meta.best_model }}. Trained on {{ meta.n_samples }} URLs ({{ meta.data_source }}). A heuristic aid, not a guarantee.</footer>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+$("f").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const o=$("out");
+  try{
+    const r=await fetch("/api/predict",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:$("u").value})});
+    const d=await r.json();
+    if(!r.ok) throw new Error(d.error);
+    o.className=d.verdict;o.style.display="block";
+    $("v").textContent={safe:"Low risk",suspicious:"Suspicious",phishing:"Likely phishing"}[d.verdict];
+    $("p").textContent="Phishing probability: "+(d.phishing_probability*100).toFixed(1)+"%";
+    const ul=$("r");ul.replaceChildren();
+    (d.reasons.length?d.reasons:["No common warning signs found"]).forEach(t=>{const li=document.createElement("li");li.textContent=t;ul.appendChild(li)});
+  }catch(err){o.className="";o.style.display="block";$("v").textContent="Could not check this URL";$("p").textContent=err.message;$("r").replaceChildren()}
+});
+</script></body></html>
